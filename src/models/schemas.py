@@ -1,14 +1,17 @@
 from datetime import date
-from pydantic import BaseModel, Field
+from typing import Optional
+from pydantic import BaseModel, Field, EmailStr
+from pydantic_extra_types.phone_numbers import PhoneNumber 
 
 
 class ContactModel(BaseModel):
     first_name: str = Field(max_length=50,  description="First name")
     last_name:  str = Field(max_length=50,  description="Last name")
-    email:      str = Field(max_length=100, description="email")  
-    phone:      str = Field(max_length=15,  description="Phone number")
+    email:      str = EmailStr
+    # phone:      PhoneNumber = Field(min_length=10, max_length = 15, phone_format=)
+    phone:      str = Field(min_length=10, max_length = 15)
     birthday:   date
-    notes:      str
+    notes:      Optional[str] 
 
 
 

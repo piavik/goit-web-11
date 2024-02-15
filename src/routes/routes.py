@@ -16,6 +16,17 @@ async def read_contacts(skip: int = 0, limit: int = 100, db: Session = Depends(g
     contacts = await actions.get_contacts(skip, limit, db)
     return contacts
 
+@router.get("/query", response_model=List[ContactResponse])
+async def find_contacts(first_name: str = "",
+                        last_name: str = "",
+                        email: str = "",
+                        birhdays: int = 7,
+                        db: Session = Depends(get_db),
+                        ):
+    contacts = await actions.find_contacts(first_name, last_name, email, birhdays, db)
+    if contacts == [] or contacts is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="contact not found")
+    return contacts
 
 @router.get("/{contact_id}", response_model=ContactResponse)
 async def read_contact(contact_id: int, db: Session = Depends(get_db)):
@@ -24,11 +35,9 @@ async def read_contact(contact_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="contact not found")
     return contact
 
-
 @router.post("/", response_model=ContactResponse)
 async def create_contact(body: ContactModel, db: Session = Depends(get_db)):
     return await actions.create_contact(body, db)
-
 
 @router.put("/{contact_id}", response_model=ContactResponse)
 async def update_contact(body: ContactModel, contact_id: int, db: Session = Depends(get_db)):
@@ -37,10 +46,11 @@ async def update_contact(body: ContactModel, contact_id: int, db: Session = Depe
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="contact not found")
     return contact
 
-
 @router.delete("/{contact_id}", response_model=ContactResponse)
 async def delete_contact(contact_id: int, db: Session = Depends(get_db)):
-    contact = await actions.remove_contact(contact_id, db)
+    contact = await actions.delete_contact(contact_id, db)
     if contact is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="contact not found")
     return contact
+
+
