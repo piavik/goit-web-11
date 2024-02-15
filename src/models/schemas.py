@@ -12,7 +12,7 @@ class ContactModel(BaseModel):
 
 
 
-class ContactResponse(TagModel):
+class ContactResponse(ContactModel):
     id:         int
     first_name: str
     last_name:  str

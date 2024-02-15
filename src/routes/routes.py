@@ -3,8 +3,8 @@ from typing import List
 from fastapi import APIRouter, HTTPException, Depends, status
 from sqlalchemy.orm import Session
 
-from src.database.db import get_db
-from src.schemas import contactModel, contactUpdate, contactStatusUpdate, contactResponse
+from src.models.db import get_db
+from src.models.schemas import ContactModel, ContactResponse
 from src.workers import actions
 
 
@@ -26,12 +26,12 @@ async def read_contact(contact_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/", response_model=ContactResponse)
-async def create_contact(body: contactModel, db: Session = Depends(get_db)):
+async def create_contact(body: ContactModel, db: Session = Depends(get_db)):
     return await actions.create_contact(body, db)
 
 
 @router.put("/{contact_id}", response_model=ContactResponse)
-async def update_contact(body: contactUpdate, contact_id: int, db: Session = Depends(get_db)):
+async def update_contact(body: ContactModel, contact_id: int, db: Session = Depends(get_db)):
     contact = await actions.update_contact(contact_id, body, db)
     if contact is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="contact not found")

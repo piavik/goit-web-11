@@ -22,7 +22,7 @@ def create_contact(body: ContactModel, db: Session) -> Contact:
     db.refresh(contact)
     return contact
 
-def update_contact(body: ContactModel, db: Session) -> Contact:
+def update_contact(contact_id: int, body: ContactModel, db: Session) -> Contact:
     contact = db.query(Contact).filter(Contact.id == contact_id).first()
     if contact:
         contact.first_name=body.first_name
