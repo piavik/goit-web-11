@@ -17,8 +17,8 @@ async def read_contacts(skip: int = 0, limit: int = 100, db: Session = Depends(g
     return contacts
 
 @router.get("/query/birtdays", response_model=List[ContactResponse])
-async def find_contacts_with_birthdays(db: Session = Depends(get_db), days: int = 7):
-    contacts = await actions.find_contacts_with_birthdays(days, db)
+async def find_contacts_with_birthdays(db: Session = Depends(get_db), days: int = 7, today: bool = False):
+    contacts = await actions.find_contacts_with_birthdays(days, today, db)
     if contacts == [] or contacts is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="contacts not found")
     return contacts

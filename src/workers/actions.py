@@ -57,18 +57,22 @@ async def find_contacts(first_name: str, last_name: str,
         contacts = None
     return  contacts
     
-async def find_contacts_with_birthdays(days: int, db: Session) -> List[Contact]:
+async def find_contacts_with_birthdays(days: int, include_today: bool, db: Session) -> List[Contact]:
 
     today_doy = datetime.today().timetuple().tm_yday        # doy = Day Of Year
-    # today_doy = datetime.today().replace(month=12, day=31).timetuple().tm_yday
-    start_doy = today_doy
+
+    days_per_year, leap_delta = (366, 1) if datetime.now().year%4 == 0 and datetime.now().year%400 == 0 else (365, 0)
+
+    start_doy = today_doy + leap_delta
     next_doy = today_doy + days
-    if next_doy > 365 :
-        start_doy = 0
-        next_doy -=365
+
+    if next_doy > days_per_year :
+        start_doy = leap_delta
+        next_doy -= days_per_year
+
     contacts = db.query(Contact).filter(or_(
-        expression.between(extract('doy', Contact.birthday), start_doy, next_doy),
-        expression.between(extract('doy', Contact.birthday), today_doy, today_doy+days),
+        expression.between(extract('doy', Contact.birthday), start_doy - include_today, next_doy-1),        # -1 because "between" includes end date
+        expression.between(extract('doy', Contact.birthday), today_doy - include_today, today_doy+days-1),
         )).all()
 
 
