@@ -1,5 +1,7 @@
 from typing import List
+from datetime import date, datetime, timedelta
 from sqlalchemy.orm import Session
+from sqlalchemy.sql import extract, expression, or_
 
 from src.models.models import Contact
 from src.models.schemas import ContactModel
@@ -43,17 +45,32 @@ async def delete_contact(contact_id: int, db: Session) -> Contact | None:
     return contact
 
 async def find_contacts(first_name: str, last_name: str,
-                        email: str, birhdays: int, db: Session) -> List[Contact]:
+                        email: str, db: Session) -> List[Contact]:
     if first_name:
         contacts = db.query(Contact).filter(Contact.first_name == first_name.capitalize()).all()
     elif last_name:
         contacts = db.query(Contact).filter(Contact.last_name == last_name.capitalize()).all()
     elif email:
         contacts = db.query(Contact).filter(Contact.email == email.lower()).all()
-    # elif birhdays:
 
-    #     contact = db.query(Contact).filter(Contact.birthday < birhdays).all()
     else:
         contacts = None
     return  contacts
     
+async def find_contacts_with_birthdays(days: int, db: Session) -> List[Contact]:
+
+    today_doy = datetime.today().timetuple().tm_yday        # doy = Day Of Year
+    # today_doy = datetime.today().replace(month=12, day=31).timetuple().tm_yday
+    start_doy = today_doy
+    next_doy = today_doy + days
+    if next_doy > 365 :
+        start_doy = 0
+        next_doy -=365
+    contacts = db.query(Contact).filter(or_(
+        expression.between(extract('doy', Contact.birthday), start_doy, next_doy),
+        expression.between(extract('doy', Contact.birthday), today_doy, today_doy+days),
+        )).all()
+
+
+
+    return  contacts
