@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "module-11"
+version = "0.1.0"
+description = ""
+authors = ["piavik <piavik@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+requests = "^2.31.0"
+fastapi = "^0.109.2"
+pydantic-extra-types = "^2.5.0"
+uvicorn = "^0.27.1"
+sqlalchemy = "^2.0.27"
+alembic = "^1.13.1"
+psycopg2 = "^2.9.9"
+phonenumbers = "^8.13.30"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
