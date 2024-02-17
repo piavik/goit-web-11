@@ -7,11 +7,11 @@ from pydantic_extra_types.phone_numbers import PhoneNumber
 class ContactModel(BaseModel):
     first_name: str = Field(max_length=50,  description="First name")
     last_name:  str = Field(max_length=50,  description="Last name")
-    email:      str = EmailStr
+    email:      EmailStr 
     # phone:      PhoneNumber = Field(min_length=10, max_length = 15, phone_format=)
     phone:      str = Field(min_length=10, max_length = 15)
     birthday:   date
-    notes:      Optional[str] 
+    notes:      Optional[str] = Field(default=None, description="Contact notes")
 
 
 
